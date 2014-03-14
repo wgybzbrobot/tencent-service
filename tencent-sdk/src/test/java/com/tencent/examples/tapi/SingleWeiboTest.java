@@ -1,6 +1,7 @@
 package com.tencent.examples.tapi;
 
-import cc.pp.service.tencent.model.Weibo;
+import cc.pp.service.tencent.model.ShowWeibo;
+
 import com.tencent.weibo.api.TAPI;
 import com.tencent.weibo.constants.OauthInit;
 import com.tencent.weibo.oauthv1.OAuthV1;
@@ -16,7 +17,7 @@ public class SingleWeiboTest {
 		OAuthV1 oauth = new OAuthV1();
 		OauthInit.oauthInit(oauth, token[0], token[1]);
 		TAPI weibo = new TAPI(oauth.getOauthVersion());
-		Weibo result = weibo.show(oauth, "json", "123");
+		ShowWeibo result = weibo.show(oauth, "json", "123");
 		System.out.println(result);
 	}
 

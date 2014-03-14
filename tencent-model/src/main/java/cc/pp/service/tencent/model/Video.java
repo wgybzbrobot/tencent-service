@@ -48,4 +48,10 @@ public class Video {
 		this.title = title;
 	}
 
+	@Override
+	public String toString() {
+		return "Video{" + "picurl='" + picurl + '\'' + ", player='" + player + '\'' + ", realurl='" + realurl + '\''
+				+ ", shorturl='" + shorturl + '\'' + ", title='" + title + '\'' + '}';
+	}
+
 }

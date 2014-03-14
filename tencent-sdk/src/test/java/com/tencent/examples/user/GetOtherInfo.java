@@ -1,5 +1,7 @@
 package com.tencent.examples.user;
 
+import cc.pp.service.tencent.model.OtherInfo;
+
 import com.tencent.weibo.api.UserAPI;
 import com.tencent.weibo.constants.OauthInit;
 import com.tencent.weibo.oauthv1.OAuthV1;
@@ -17,7 +19,7 @@ public class GetOtherInfo {
 		OauthInit.oauthInit(oauth, tokens[0], tokens[1]);
 		UserAPI user = new UserAPI(oauth.getOauthVersion());
 		String uid = "cxpolice";
-		String userinfo = user.otherInfo(oauth, "json", uid, "");
+		OtherInfo userinfo = user.otherInfo(oauth, "json", uid, "");
 		System.out.println(userinfo);
 	}
 

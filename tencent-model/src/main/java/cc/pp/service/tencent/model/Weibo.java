@@ -85,6 +85,7 @@ public class Weibo {
 	}
 
 	public static class Video {
+
 		public String picurl; // 缩略图,
 		public String player; // 播放器地址,
 		public String realurl; // 视频原地址,
@@ -93,30 +94,23 @@ public class Weibo {
 
 		@Override
 		public String toString() {
-			return "Video{" +
-					"picurl='" + picurl + '\'' +
-					", player='" + player + '\'' +
-					", realurl='" + realurl + '\'' +
-					", shorturl='" + shorturl + '\'' +
-					", title='" + title + '\'' +
-					'}';
+			return "Video{" + "picurl='" + picurl + '\'' + ", player='" + player + '\'' + ", realurl='" + realurl
+					+ '\'' + ", shorturl='" + shorturl + '\'' + ", title='" + title + '\'' + '}';
 		}
 	}
 
 	public static class Music {
+
 		public String author; // 演唱者,
 		public String url; // 音频地址,
 		public String title; // 音频名字，歌名
+		public long id;
 
 		@Override
 		public String toString() {
-			return "Music{" +
-					"author='" + author + '\'' +
-					", url='" + url + '\'' +
-					", title='" + title + '\'' +
-					'}';
+			return "Music{" + "id='" + id + "\'" + ",author='" + author + '\'' + ", url='" + url + '\'' + ", title='"
+					+ title + '\'' + '}';
 		}
 	}
-
 
 }

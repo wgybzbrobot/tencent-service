@@ -20,7 +20,7 @@ public class SourceTweet {
 	private String location;
 	private String longitude;
 	private int mcount;
-	private List<Music> music;
+	private Music music;
 	private String name;
 	private String nick;
 	private String openid;
@@ -31,7 +31,7 @@ public class SourceTweet {
 	private String text;
 	private long timestamp;
 	private int type;
-	private List<Video> video;
+	private Video video;
 	private String wei;
 
 	public String getCity_code() {
@@ -162,11 +162,11 @@ public class SourceTweet {
 		this.mcount = mcount;
 	}
 
-	public List<Music> getMusic() {
+	public Music getMusic() {
 		return music;
 	}
 
-	public void setMusic(List<Music> music) {
+	public void setMusic(Music music) {
 		this.music = music;
 	}
 
@@ -250,11 +250,11 @@ public class SourceTweet {
 		this.type = type;
 	}
 
-	public List<Video> getVideo() {
+	public Video getVideo() {
 		return video;
 	}
 
-	public void setVideo(List<Video> video) {
+	public void setVideo(Video video) {
 		this.video = video;
 	}
 

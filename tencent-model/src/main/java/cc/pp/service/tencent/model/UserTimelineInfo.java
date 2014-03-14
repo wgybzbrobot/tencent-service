@@ -23,7 +23,7 @@ public class UserTimelineInfo {
 	private String location;
 	private String longitude;
 	private int mcount;
-	private List<Music> music;
+	private Music music;
 	private String name;
 	private String nick;
 	private String openid;
@@ -35,7 +35,7 @@ public class UserTimelineInfo {
 	private String text;
 	private long timestamp;
 	private int type;
-	private List<Video> video;
+	private Video video;
 	private String wei;
 	private PicInfo pic;
 
@@ -199,11 +199,11 @@ public class UserTimelineInfo {
 		this.mcount = mcount;
 	}
 
-	public List<Music> getMusic() {
+	public Music getMusic() {
 		return music;
 	}
 
-	public void setMusic(List<Music> music) {
+	public void setMusic(Music music) {
 		this.music = music;
 	}
 
@@ -295,11 +295,11 @@ public class UserTimelineInfo {
 		this.type = type;
 	}
 
-	public List<Video> getVideo() {
+	public Video getVideo() {
 		return video;
 	}
 
-	public void setVideo(List<Video> video) {
+	public void setVideo(Video video) {
 		this.video = video;
 	}
 

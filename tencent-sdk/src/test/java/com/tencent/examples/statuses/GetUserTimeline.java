@@ -1,5 +1,7 @@
 package com.tencent.examples.statuses;
 
+import cc.pp.service.tencent.model.UserTimeline;
+
 import com.tencent.weibo.api.StatusesAPI;
 import com.tencent.weibo.constants.OauthInit;
 import com.tencent.weibo.oauthv1.OAuthV1;
@@ -17,7 +19,7 @@ public class GetUserTimeline {
 		OauthInit.oauthInit(oauth, tokens[0], tokens[1]);
 		StatusesAPI sa = new StatusesAPI(oauth.getOauthVersion());
 		String uid = "cxpolice";
-		String statusesinfo = sa.userTimeline(oauth, "json", "0", "0", "70", "0", uid, "", "0", "0");
+		UserTimeline statusesinfo = sa.userTimeline(oauth, "json", "0", "0", "70", "0", uid, "", "0", "0");
 		System.out.println(statusesinfo);
 	}
 

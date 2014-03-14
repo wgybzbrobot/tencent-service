@@ -11,7 +11,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import cc.pp.service.tencent.dao.StatusDao;
-import cc.pp.service.tencent.model.Weibo;
+import cc.pp.service.tencent.model.ShowWeibo;
 
 /**
  * Created by chenwei on 14-2-23.
@@ -33,13 +33,13 @@ public class StatusDaoHttpClient implements StatusDao {
 	}
 
 	@Override
-	public Weibo get(String uid, long wid) {
+	public ShowWeibo get(String uid, long wid) {
 		HttpGet get = new HttpGet(serviceAddress + "/tencent/users/" + uid + "/t/" + wid);
 		try {
 			HttpResponse response = httpClient.execute(get);
 			if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
 				try (InputStream in = response.getEntity().getContent()) {
-					return mapper.readValue(in, Weibo.class);
+					return mapper.readValue(in, ShowWeibo.class);
 				}
 			} else {
 				throw new RuntimeException(response.getStatusLine().toString());

@@ -1,6 +1,6 @@
 package cc.pp.service.tencent.dao;
 
-import cc.pp.service.tencent.model.Weibo;
+import cc.pp.service.tencent.model.ShowWeibo;
 import cc.pp.service.token.TencentTokenServiceImpl;
 import cc.pp.service.token.tencent.TencentToken;
 import cc.pp.service.token.tencent.TencentTokenService;
@@ -18,7 +18,7 @@ public class StatusDaoImpl implements StatusDao {
 	private final TencentTokenService tokenService = new TencentTokenServiceImpl();
 
 	@Override
-	public Weibo get(String uid, long wid) {
+	public ShowWeibo get(String uid, long wid) {
 		TencentToken token = tokenService.getRandomToken();
 		OAuthV1 oauth = new OAuthV1();
 		OauthInit.oauthInit(oauth, token.getAccessToken(), token.getTokenSecret());

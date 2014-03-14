@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public class ShowData {
-	
+
 	private String city_code;
 	private int count;
 	private String country_code;
@@ -24,7 +24,7 @@ public class ShowData {
 	private String location;
 	private String longitude;
 	private int mcount;
-	private List<Music> music;
+	private Music music;
 	private String name;
 	private String nick;
 	private String openid;
@@ -194,11 +194,11 @@ public class ShowData {
 		this.mcount = mcount;
 	}
 
-	public List<Music> getMusic() {
+	public Music getMusic() {
 		return music;
 	}
 
-	public void setMusic(List<Music> music) {
+	public void setMusic(Music music) {
 		this.music = music;
 	}
 

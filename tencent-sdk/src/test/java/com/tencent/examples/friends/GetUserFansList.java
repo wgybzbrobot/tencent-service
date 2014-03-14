@@ -1,21 +1,16 @@
 package com.tencent.examples.friends;
 
-import java.io.EOFException;
-
-import org.codehaus.jackson.map.JsonMappingException;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.exc.UnrecognizedPropertyException;
+import cc.pp.service.tencent.model.UserFansList;
 
 import com.tencent.weibo.api.FriendsAPI;
 import com.tencent.weibo.constants.OauthInit;
-import cc.pp.service.tencent.model.UserFansList;
 import com.tencent.weibo.oauthv1.OAuthV1;
 
 public class GetUserFansList {
 
 	/**
 	 * @param args
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public static void main(String[] args) throws Exception {
 
@@ -24,19 +19,8 @@ public class GetUserFansList {
 		OauthInit.oauthInit(oauth, tokens[0], tokens[1]);
 		FriendsAPI fa = new FriendsAPI(oauth.getOauthVersion());
 		String uid = "cxpolice";
-		ObjectMapper mapper = new ObjectMapper();
-		String fansinfo = fa.userFanslist(oauth, "json", "30", "0", uid, "", "1", "0");
-		try {
-			UserFansList userFansList = mapper.readValue(fansinfo, UserFansList.class);
-			System.out.println(userFansList.getData().getCurnum());
-		} catch (UnrecognizedPropertyException e) {
-			e.printStackTrace();
-		} catch (JsonMappingException e) {
-			e.printStackTrace();
-		} catch (EOFException e) {
-			e.printStackTrace();
-		}
-
+		UserFansList fansinfo = fa.userFanslist(oauth, "json", "30", "0", uid, "", "1", "0");
+		System.out.println(fansinfo);
 	}
 
 }
