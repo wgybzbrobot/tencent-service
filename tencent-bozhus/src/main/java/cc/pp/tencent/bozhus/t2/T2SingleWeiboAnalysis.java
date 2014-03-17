@@ -1,19 +1,26 @@
 package cc.pp.tencent.bozhus.t2;
 
 import java.util.HashMap;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cc.pp.service.tencent.dao.info.TencentUserInfoDao;
 import cc.pp.service.tencent.dao.info.TencentWeiboInfoDao;
-import cc.pp.service.tencent.model.Infos;
+import cc.pp.service.tencent.model.InfosData;
 import cc.pp.service.tencent.model.ShowWeibo;
 import cc.pp.service.tencent.model.SimpleUser;
-import cc.pp.service.tencent.model.UserTimeline;
+import cc.pp.service.tencent.model.UserTimelineData;
 import cc.pp.service.tencent.model.UserTimelineInfo;
+import cc.pp.service.token.TencentTokenServiceImpl;
+import cc.pp.service.token.tencent.TencentTokenService;
+import cc.pp.sina.dao.common.MybatisConfig;
+import cc.pp.sina.dao.t2.T2SingleWeibo;
+import cc.pp.sina.utils.json.JsonUtils;
 import cc.pp.tencent.algorithms.top.sort.InsertSort;
 import cc.pp.tencent.bozhus.common.SourceType;
+import cc.pp.tencent.bozhus.common.TencentDaoUtils;
 import cc.pp.tencent.bozhus.domain.SimpleWeiboResult;
 
 public class T2SingleWeiboAnalysis {
@@ -22,6 +29,8 @@ public class T2SingleWeiboAnalysis {
 
 	private final TencentUserInfoDao tencentUserInfoDao;
 	private final TencentWeiboInfoDao tencentWeiboInfoDao;
+
+	private final T2SingleWeibo singleWeibo = new T2SingleWeibo(MybatisConfig.ServerEnum.fenxi);
 
 	public T2SingleWeiboAnalysis(TencentUserInfoDao tencentUserInfoDao, TencentWeiboInfoDao tencentWeiboInfoDao) {
 		this.tencentUserInfoDao = tencentUserInfoDao;
@@ -33,13 +42,43 @@ public class T2SingleWeiboAnalysis {
 	 */
 	public static void main(String[] args) throws Exception {
 
+		TencentTokenService tokenService = new TencentTokenServiceImpl();
+		T2SingleWeiboAnalysis singleWeiboAnalysis = new T2SingleWeiboAnalysis(
+				TencentDaoUtils.getTencentUserInfoDao(tokenService),
+				TencentDaoUtils.getTencentWeiboInfoDao(tokenService));
+		singleWeiboAnalysis.insertSingleWeiboResult();
+	}
 
+	/**
+	 * 分析所有待分析微博
+	 */
+	public void insertSingleWeiboResult() {
+		List<String> wids = singleWeibo.getNewWids("tencent");
+		for (String wid : wids) {
+			logger.info("wid=" + wid);
+			SimpleWeiboResult result = singleWeiboAnalysis(wid);
+			if (result != null) {
+				try {
+					singleWeibo.updateSingleWeibo("tencent", Long.parseLong(wid), "",
+							JsonUtils.toJsonWithoutPretty(result));
+				} catch (Exception e) {
+					logger.error("wid=" + wid + " has incorrect string value.");
+					//					singleWeibo.updateSingleWeibo("tencent", Long.parseLong(wid), "", JsonUtils
+					//							.toJsonWithoutPretty(new ErrorResponse.Builder(20003, "wid has error reposters.").build()));
+					singleWeibo.updateSingleWeibo("tencent", Long.parseLong(wid), "", "");
+				}
+			} else {
+				//				singleWeibo.updateSingleWeibo("tencent", Long.parseLong(wid), "", JsonUtils
+				//						.toJsonWithoutPretty(new ErrorResponse.Builder(20003, "wid has none reposters.").build()));
+				singleWeibo.updateSingleWeibo("tencent", Long.parseLong(wid), "", "");
+			}
+		}
 	}
 
 	/**
 	 * 分析函数
 	 */
-	public SimpleWeiboResult singleWeiboAnalysis(String url) throws Exception {
+	public SimpleWeiboResult singleWeiboAnalysis(String url) {
 
 		// 结果初始化
 		SimpleWeiboResult result = new SimpleWeiboResult();
@@ -86,8 +125,8 @@ public class T2SingleWeiboAnalysis {
 		result.setCommentcount(weibo.getData().getMcount());
 
 		/*********转发数据*********/
-		UserTimeline reposters = tencentWeiboInfoDao.getTencentSingleWeiboResposts(wid);
-		if (reposters.getData() == null) {
+		UserTimelineData reposters = tencentWeiboInfoDao.getTencentSingleWeiboResposts(wid);
+		if (reposters == null) {
 			logger.info("Wid=" + wid + " has no reposters.");
 			return null;
 		}
@@ -97,9 +136,9 @@ public class T2SingleWeiboAnalysis {
 		int cursor = 2;
 		while ((cursor * 100 < weibo.getData().getCount()) && (cursor <= 50)) {
 
-			logger.info("Cursor=" + cursor);
+			logger.info("Cursor=" + cursor++);
 
-			for (UserTimelineInfo info : reposters.getData().getInfo()) {
+			for (UserTimelineInfo info : reposters.getInfo()) {
 				existwb++;
 				usernames.put(existwb, info.getName());
 				str += info.getText();
@@ -120,7 +159,11 @@ public class T2SingleWeiboAnalysis {
 				// 9、转发时间线--按天
 				SWeiboUtils.putRepostByDay(reposttimelinebyDay, SWeiboUtils.getDate(reposttime));
 				// 11、区域分布
-				location[SWeiboUtils.checkCity(Integer.parseInt(info.getProvince_code()))]++;
+				if (info.getProvince_code().length() == 0) {
+					location[SWeiboUtils.checkCity(0)]++;
+				} else {
+					location[SWeiboUtils.checkCity(Integer.parseInt(info.getProvince_code()))]++;
+				}
 				// 12、终端设备
 				wbsource[SourceType.getCategory(info.getFrom())]++;
 				// 14、认证分布
@@ -130,10 +173,10 @@ public class T2SingleWeiboAnalysis {
 				// 17、微博类型
 				weibotype[info.getType()]++; //1-原创发表，2-转载，3-私信，4-回复，5-空回，6-提及，7-评论
 			}
-			lasttime = reposters.getData().getInfo().get(reposters.getData().getInfo().size() - 1).getTimestamp();
-			lastwid = reposters.getData().getInfo().get(reposters.getData().getInfo().size() - 1).getId();
+			lasttime = reposters.getInfo().get(reposters.getInfo().size() - 1).getTimestamp();
+			lastwid = reposters.getInfo().get(reposters.getInfo().size() - 1).getId();
 			reposters = tencentWeiboInfoDao.getTencentSingleWeiboResposts(wid, lasttime, lastwid);
-			if (reposters.getData() == null) {
+			if (reposters == null) {
 				break;
 			}
 		}
@@ -182,7 +225,7 @@ public class T2SingleWeiboAnalysis {
 	/**
 	 * 获取用户的信息
 	 */
-	private HashMap<String, String> getBasedinfo(HashMap<Integer, String> usernames) throws Exception {
+	private HashMap<String, String> getBasedinfo(HashMap<Integer, String> usernames) {
 
 		HashMap<String, String> result = new HashMap<>();
 		String uids = "";
@@ -191,12 +234,12 @@ public class T2SingleWeiboAnalysis {
 
 			uids = getUids(usernames, i);
 			/*****************采集用户信息******************/
-			Infos userinfos = tencentUserInfoDao.getTencentUserBaseInfos(uids);
-			if (userinfos.getData() == null) {
+			InfosData userinfos = tencentUserInfoDao.getTencentUserBaseInfos(uids);
+			if (userinfos == null) {
 				i++;
 				continue;
 			}
-			for (SimpleUser userinfo : userinfos.getData().getInfo()) {
+			for (SimpleUser userinfo : userinfos.getInfo()) {
 				result.put(userinfo.getName(), userinfo.getFansnum() + "");
 			}
 			if (usernames.size() - 30 > i) {
@@ -232,10 +275,9 @@ public class T2SingleWeiboAnalysis {
 	/**
 	 * 用户基础数据处理
 	 */
-	private int[] userBaseInfo(HashMap<Integer, String> usernames, int[] gender, int[] reposterquality)
-			throws Exception {
+	private int[] userBaseInfo(HashMap<Integer, String> usernames, int[] gender, int[] reposterquality) {
 
-		Infos userinfos;
+		InfosData userinfos;
 		int exposionsum = 0, usersum = 0, count = 1;
 		if (usernames.size() > 30) {
 			count = usernames.size() / 30;
@@ -248,10 +290,10 @@ public class T2SingleWeiboAnalysis {
 			}
 			uids = uids.substring(0, uids.length() - 1);
 			userinfos = tencentUserInfoDao.getTencentUserBaseInfos(uids);
-			if (userinfos.getData() == null) {
+			if (userinfos == null) {
 				continue;
 			}
-			for (SimpleUser userinfo : userinfos.getData().getInfo()) {
+			for (SimpleUser userinfo : userinfos.getInfo()) {
 				usersum++;
 				// 10、性别分布
 				gender[userinfo.getSex()]++; //1-男，2-女，0-未填写

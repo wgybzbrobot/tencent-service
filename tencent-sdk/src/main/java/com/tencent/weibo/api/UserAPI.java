@@ -4,10 +4,14 @@ import java.io.IOException;
 
 import org.apache.http.message.BasicNameValuePair;
 
+import cc.pp.service.tencent.exception.TencentApiException;
 import cc.pp.service.tencent.model.Infos;
+import cc.pp.service.tencent.model.InfosData;
 import cc.pp.service.tencent.model.OtherInfo;
+import cc.pp.service.tencent.model.OtherInfoData;
 
 import com.tencent.weibo.beans.OAuth;
+import com.tencent.weibo.constants.ErrorCodeConstants;
 import com.tencent.weibo.utils.QArrayList;
 import com.tencent.weibo.utils.QHttpClient;
 
@@ -66,14 +70,19 @@ public class UserAPI  extends BasicAPI{
 	 * @throws Exception
      * @see <a href="http://wiki.open.t.qq.com/index.php/%E5%B8%90%E6%88%B7%E7%9B%B8%E5%85%B3/%E8%8E%B7%E5%8F%96%E5%85%B6%E4%BB%96%E4%BA%BA%E8%B5%84%E6%96%99">腾讯微博开放平台上关于此条API的文档</a>
 	 */
-	public OtherInfo otherInfo(OAuth oAuth, String format, String name, String fopenid) {
+	public OtherInfoData otherInfo(OAuth oAuth, String format, String name, String fopenid) {
 		QArrayList paramsList = new QArrayList();
 		paramsList.add(new BasicNameValuePair("format", format));
 		paramsList.add(new BasicNameValuePair("name", name));
         paramsList.add(new BasicNameValuePair("fopenid", fopenid));
 		String resource = requestAPI.getResource(userOtherInfoUrl, paramsList, oAuth);
 		try {
-			return mapper.readValue(resource, OtherInfo.class);
+			OtherInfo result = mapper.readValue(resource, OtherInfo.class);
+			if (ErrorCodeConstants.ret_0 == result.ret || ErrorCodeConstants.error_0 == result.errcode) {
+				return result.getData();
+			} else {
+				throw new TencentApiException(result);
+			}
 		} catch (IOException e) {
 			throw new RuntimeException(resource, e);
 		}
@@ -93,16 +102,19 @@ public class UserAPI  extends BasicAPI{
 	 * @throws Exception
      * @see <a href="http://wiki.open.t.qq.com/index.php/%E5%B8%90%E6%88%B7%E7%9B%B8%E5%85%B3/%E8%8E%B7%E5%8F%96%E4%B8%80%E6%89%B9%E4%BA%BA%E7%9A%84%E7%AE%80%E5%8D%95%E8%B5%84%E6%96%99">腾讯微博开放平台上关于此条API的文档</a>
 	 */
-	public Infos infos(OAuth oAuth, String format, String names, String fopenids
-			)
-			throws Exception {
+	public InfosData infos(OAuth oAuth, String format, String names, String fopenids) {
 		QArrayList paramsList = new QArrayList();
 		paramsList.add(new BasicNameValuePair("format", format));
 		paramsList.add(new BasicNameValuePair("names", names));
         paramsList.add(new BasicNameValuePair("fopenids", fopenids));
 		String resource = requestAPI.getResource(userInfosUrl, paramsList, oAuth);
 		try {
-			return mapper.readValue(resource, Infos.class);
+			Infos result = mapper.readValue(resource, Infos.class);
+			if (ErrorCodeConstants.ret_0 == result.ret || ErrorCodeConstants.error_0 == result.errcode) {
+				return result.getData();
+			} else {
+				throw new TencentApiException(result);
+			}
 		} catch (IOException e) {
 			throw new RuntimeException(resource, e);
 		}

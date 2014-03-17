@@ -4,7 +4,12 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public abstract class RetryHandler implements InvocationHandler {
+
+	private static Logger logger = LoggerFactory.getLogger(RetryHandler.class);
 
 	private final Object instance;
 
@@ -32,6 +37,7 @@ public abstract class RetryHandler implements InvocationHandler {
 	protected abstract boolean isRetry(Throwable e);
 
 	private Object retry(Method method, Object[] args, int retryCount) throws Throwable {
+		logger.info("RetryCount=" + retryCount);
 		try {
 			return method.invoke(instance, args);
 		} catch (InvocationTargetException e) {

@@ -2,7 +2,7 @@ package cc.pp.service.tencent.model;
 
 import java.util.List;
 
-public class Data {
+public class InfosData {
 
 	private long timestamp;
 	private List<SimpleUser> info;

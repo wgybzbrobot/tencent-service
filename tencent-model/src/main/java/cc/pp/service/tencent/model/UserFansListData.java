@@ -2,7 +2,7 @@ package cc.pp.service.tencent.model;
 
 import java.util.List;
 
-public class UserFansData {
+public class UserFansListData {
 
 	private int curnum;
 	private int hasnext;

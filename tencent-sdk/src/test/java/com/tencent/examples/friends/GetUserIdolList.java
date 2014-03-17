@@ -1,6 +1,6 @@
 package com.tencent.examples.friends;
 
-import cc.pp.service.tencent.model.UserIdolList;
+import cc.pp.service.tencent.model.UserIdolListData;
 
 import com.tencent.weibo.api.FriendsAPI;
 import com.tencent.weibo.constants.OauthInit;
@@ -19,7 +19,7 @@ public class GetUserIdolList {
 		OauthInit.oauthInit(oauth, tokens[0], tokens[1]);
 		FriendsAPI fa = new FriendsAPI(oauth.getOauthVersion());
 		String uid = "cxpolice";
-		UserIdolList friendsinfo = fa.userIdollist(oauth, "json", "30", "0", uid, "", "0", "0");
+		UserIdolListData friendsinfo = fa.userIdollist(oauth, "json", "30", "0", uid, "", "0", "0");
 		System.out.println(friendsinfo);
 
 	}

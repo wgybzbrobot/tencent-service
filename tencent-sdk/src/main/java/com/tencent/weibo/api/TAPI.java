@@ -5,10 +5,13 @@ import java.io.IOException;
 
 import org.apache.http.message.BasicNameValuePair;
 
+import cc.pp.service.tencent.exception.TencentApiException;
 import cc.pp.service.tencent.model.ShowWeibo;
 import cc.pp.service.tencent.model.UserTimeline;
+import cc.pp.service.tencent.model.UserTimelineData;
 
 import com.tencent.weibo.beans.OAuth;
+import com.tencent.weibo.constants.ErrorCodeConstants;
 import com.tencent.weibo.utils.QArrayList;
 import com.tencent.weibo.utils.QHttpClient;
 
@@ -371,9 +374,8 @@ public class TAPI extends BasicAPI{
 	 * @throws Exception
      * @see <a href="http://wiki.open.t.qq.com/index.php/%E5%BE%AE%E5%8D%9A%E7%9B%B8%E5%85%B3/%E8%8E%B7%E5%8F%96%E5%8D%95%E6%9D%A1%E5%BE%AE%E5%8D%9A%E7%9A%84%E8%BD%AC%E5%8F%91%E6%88%96%E7%82%B9%E8%AF%84%E5%88%97%E8%A1%A8">腾讯微博开放平台上关于此条API的文档</a>
 	 */
-	public UserTimeline reList(OAuth oAuth, String format, String flag, String rootid,
-			String pageflag, String pagetime, String reqnum,
-			String twitterid) throws Exception {
+	public UserTimelineData reList(OAuth oAuth, String format, String flag, String rootid, String pageflag,
+			String pagetime, String reqnum, String twitterid) {
 		QArrayList paramsList = new QArrayList();
 		paramsList.add(new BasicNameValuePair("format", format));
 		paramsList.add(new BasicNameValuePair("flag", flag));
@@ -384,7 +386,13 @@ public class TAPI extends BasicAPI{
 		paramsList.add(new BasicNameValuePair("twitterid", twitterid));
 		String resource = requestAPI.getResource(tReListUrl, paramsList, oAuth);
 		try {
-			return mapper.readValue(resource, UserTimeline.class);
+			UserTimeline result = mapper.readValue(resource, UserTimeline.class);
+			if (ErrorCodeConstants.ret_0 == result.ret || ErrorCodeConstants.error_0 == result.errcode) {
+				return result.getData();
+			} else {
+				logger.error(resource);
+				throw new TencentApiException(result);
+			}
 		} catch (IOException e) {
 			throw new RuntimeException(resource, e);
 		}

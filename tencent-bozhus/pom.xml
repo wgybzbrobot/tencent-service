@@ -61,6 +61,16 @@
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>cc.pp.datacenter</groupId>
+			<artifactId>sina-dao</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>cc.pp.datacenter</groupId>
+			<artifactId>sina-domain</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
 		</dependency>

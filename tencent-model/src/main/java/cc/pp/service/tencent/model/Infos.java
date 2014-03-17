@@ -2,13 +2,13 @@ package cc.pp.service.tencent.model;
 
 public class Infos extends Result<Object> {
 
-	private Data data;
+	private InfosData data;
 
-	public Data getData() {
+	public InfosData getData() {
 		return data;
 	}
 
-	public void setData(Data data) {
+	public void setData(InfosData data) {
 		this.data = data;
 	}
 

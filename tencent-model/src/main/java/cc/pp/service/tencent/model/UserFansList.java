@@ -2,13 +2,13 @@ package cc.pp.service.tencent.model;
 
 public class UserFansList extends Result<Object> {
 
-	private UserFansData data;
+	private UserFansListData data;
 
-	public UserFansData getData() {
+	public UserFansListData getData() {
 		return data;
 	}
 
-	public void setData(UserFansData data) {
+	public void setData(UserFansListData data) {
 		this.data = data;
 	}
 

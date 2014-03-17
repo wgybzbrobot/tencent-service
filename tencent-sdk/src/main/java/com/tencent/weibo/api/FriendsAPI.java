@@ -4,10 +4,14 @@ import java.io.IOException;
 
 import org.apache.http.message.BasicNameValuePair;
 
+import cc.pp.service.tencent.exception.TencentApiException;
 import cc.pp.service.tencent.model.UserFansList;
+import cc.pp.service.tencent.model.UserFansListData;
 import cc.pp.service.tencent.model.UserIdolList;
+import cc.pp.service.tencent.model.UserIdolListData;
 
 import com.tencent.weibo.beans.OAuth;
+import com.tencent.weibo.constants.ErrorCodeConstants;
 import com.tencent.weibo.utils.QArrayList;
 import com.tencent.weibo.utils.QHttpClient;
 
@@ -154,8 +158,8 @@ public class FriendsAPI extends BasicAPI {
      * @throws Exception
      * @see <a href="http://wiki.open.t.qq.com/index.php/%E5%B8%90%E6%88%B7%E7%9B%B8%E5%85%B3/%E5%85%B6%E4%BB%96%E5%B8%90%E6%88%B7%E5%90%AC%E4%BC%97%E5%88%97%E8%A1%A8">腾讯微博开放平台上关于此条API的文档</a>
      */
-	public UserFansList userFanslist(OAuth oAuth, String format, String reqnum,
-            String startindex,String name,String fopenid,String mode,String install) throws Exception {
+	public UserFansListData userFanslist(OAuth oAuth, String format, String reqnum, String startindex, String name,
+			String fopenid, String mode, String install) {
         QArrayList paramsList = new QArrayList();
         paramsList.add(new BasicNameValuePair("format", format));
         paramsList.add(new BasicNameValuePair("reqnum", reqnum));
@@ -174,7 +178,12 @@ public class FriendsAPI extends BasicAPI {
 //        //URLEncoder.encode("install", "UTF-8")
 		String resource = requestAPI.getResource(friendsUserFansListUrl, paramsList, oAuth);
 		try {
-			return mapper.readValue(resource, UserFansList.class);
+			UserFansList result = mapper.readValue(resource, UserFansList.class);
+			if (ErrorCodeConstants.ret_0 == result.ret || ErrorCodeConstants.error_0 == result.errcode) {
+				return result.getData();
+			} else {
+				throw new TencentApiException(result);
+			}
 		} catch (IOException e) {
 			throw new RuntimeException(resource, e);
 		}
@@ -277,8 +286,8 @@ public class FriendsAPI extends BasicAPI {
 	 * @throws Exception
      * @see <a href="http://wiki.open.t.qq.com/index.php/%E5%B8%90%E6%88%B7%E7%9B%B8%E5%85%B3/%E5%85%B6%E4%BB%96%E5%B8%90%E6%88%B7%E6%94%B6%E5%90%AC%E7%9A%84%E4%BA%BA%E5%88%97%E8%A1%A8">腾讯微博开放平台上关于此条API的文档</a>
 	 */
-	public UserIdolList userIdollist(OAuth oAuth, String format, String reqnum,
-			String startindex,String name, String fopenid, String install, String mode) throws Exception {
+	public UserIdolListData userIdollist(OAuth oAuth, String format, String reqnum, String startindex, String name,
+			String fopenid, String install, String mode) {
 		QArrayList paramsList = new QArrayList();
 		paramsList.add(new BasicNameValuePair("format", format));
 		paramsList.add(new BasicNameValuePair("reqnum", reqnum));
@@ -289,7 +298,12 @@ public class FriendsAPI extends BasicAPI {
         paramsList.add(new BasicNameValuePair("mode", mode));
 		String resource = requestAPI.getResource(friendsUserIdolListUrl, paramsList, oAuth);
 		try {
-			return mapper.readValue(resource, UserIdolList.class);
+			UserIdolList result = mapper.readValue(resource, UserIdolList.class);
+			if (ErrorCodeConstants.ret_0 == result.ret || ErrorCodeConstants.error_0 == result.errcode) {
+				return result.getData();
+			} else {
+				throw new TencentApiException(result);
+			}
 		} catch (IOException e) {
 			throw new RuntimeException(resource, e);
 		}

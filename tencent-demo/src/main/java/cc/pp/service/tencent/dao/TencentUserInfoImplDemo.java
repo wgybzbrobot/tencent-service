@@ -5,7 +5,10 @@ import java.lang.reflect.Proxy;
 import cc.pp.service.tencent.dao.info.TencentUserInfoDao;
 import cc.pp.service.tencent.dao.info.TencentUserInfoDaoImpl;
 import cc.pp.service.tencent.exception.TencentApiException;
-import cc.pp.service.tencent.model.Infos;
+import cc.pp.service.tencent.model.InfosData;
+import cc.pp.service.tencent.model.OtherInfoData;
+import cc.pp.service.tencent.model.UserFansListData;
+import cc.pp.service.tencent.model.UserIdolListData;
 import cc.pp.service.token.TencentTokenServiceImpl;
 import cc.pp.service.token.tencent.TencentTokenService;
 import cc.pp.tencent.utils.json.JsonUtils;
@@ -35,16 +38,16 @@ public class TencentUserInfoImplDemo {
 			}
 		});
 
-		//		String uid = "langdao2010";
-		//		OtherInfo otherInfo = tencentUserInfoDao.getTencentUserBaseInfo(uid);
-		//		System.out.println(JsonUtils.toJson(otherInfo));
-		//		UserFansList userFansList = tencentUserInfoDao.getTencentUserFans(uid, 1);
-		//		System.out.println(JsonUtils.toJson(userFansList));
-		//		UserIdolList userIdolList = tencentUserInfoDao.getTencentUserFriends(uid, 1);
-		//		System.out.println(JsonUtils.toJson(userIdolList));
+		String uid = "langdao2010";
+		OtherInfoData otherInfo = tencentUserInfoDao.getTencentUserBaseInfo(uid);
+		System.out.println(JsonUtils.toJson(otherInfo));
+		UserFansListData userFansList = tencentUserInfoDao.getTencentUserFans(uid, 1);
+		System.out.println(JsonUtils.toJson(userFansList));
+		UserIdolListData userIdolList = tencentUserInfoDao.getTencentUserFriends(uid, 1);
+		System.out.println(JsonUtils.toJson(userIdolList));
 
 		String uids = "langdao2010,wghwd_9059";
-		Infos infos = tencentUserInfoDao.getTencentUserBaseInfos(uids);
+		InfosData infos = tencentUserInfoDao.getTencentUserBaseInfos(uids);
 		System.out.println(JsonUtils.toJson(infos));
 
 	}

@@ -1,7 +1,7 @@
 package cc.pp.service.tencent.dao.info;
 
 import cc.pp.service.tencent.model.ShowWeibo;
-import cc.pp.service.tencent.model.UserTimeline;
+import cc.pp.service.tencent.model.UserTimelineData;
 
 
 /**
@@ -19,22 +19,33 @@ public interface TencentWeiboInfoDao {
 	/**
 	 * 单条微博转发列表
 	 */
-	public UserTimeline getTencentSingleWeiboResposts(String wid);
+	public UserTimelineData getTencentSingleWeiboResposts(String wid);
 
-	public UserTimeline getTencentSingleWeiboResposts(String wid, long lasttime, String lastwid);
+	public UserTimelineData getTencentSingleWeiboResposts(String wid, long lasttime, String lastwid);
 
 	/**
 	 * 单条微博评论列表
 	 */
-	public UserTimeline getTencentSingleWeiboComments(String wid);
+	public UserTimelineData getTencentSingleWeiboComments(String wid);
 
-	public UserTimeline getTencentSingleWeiboComments(String wid, long lasttime, String lastwid);
+	public UserTimelineData getTencentSingleWeiboComments(String wid, long lasttime, String lastwid);
 
 	/**
 	 * 用户微博数据
 	 */
-	public UserTimeline getTencentUserWeibos(String uid);
+	public UserTimelineData getTencentUserWeibos(String uid);
 
-	public UserTimeline getTencentUserWeibos(String uid, long lasttime, String lastwid);
+	public UserTimelineData getTencentUserWeibos(String uid, long lasttime, String lastwid);
+
+	public UserTimelineData getTencentUserOriRepWeibos(String uid, long lasttime, String lastwid);
+
+	/**
+	 * 获取@当前用户的最新微博
+	 */
+	public UserTimelineData getTencentUserMentions(String uid);
+
+	public UserTimelineData getTencentUserMentions(String uid, long lasttime, String lastwid);
+
+	public UserTimelineData getTencentUserOriRepMentions(String uid, long lasttime, String lastwid);
 
 }
