@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cc.pp.service.tencent.dao.info.TencentWeiboInfoDao;
+import cc.pp.service.tencent.exception.TencentApiException;
 import cc.pp.service.tencent.model.UserTimelineData;
 import cc.pp.service.tencent.model.UserTimelineInfo;
 
@@ -36,7 +37,12 @@ public class T2GetAtInfo {
 		 * result[3]----@数量
 		 */
 		int[] result = new int[4];
-		UserTimelineData mentions = tencentWeiboInfoDao.getTencentUserMentions(uid);
+		UserTimelineData mentions = null;
+		try {
+			mentions = tencentWeiboInfoDao.getTencentUserMentions(uid);
+		} catch (TencentApiException e) {
+			mentions = null;
+		}
 		if (mentions == null) {
 			logger.info("User '" + uid + "' has no mention.");
 			return result;
@@ -58,7 +64,11 @@ public class T2GetAtInfo {
 			}
 			lasttime = mentions.getInfo().get(mentions.getInfo().size() - 1).getTimestamp();
 			lastwid = mentions.getInfo().get(mentions.getInfo().size() - 1).getId();
-			mentions = tencentWeiboInfoDao.getTencentUserMentions(uid, lasttime, lastwid);
+			try {
+				mentions = tencentWeiboInfoDao.getTencentUserMentions(uid, lasttime, lastwid);
+			} catch (TencentApiException e) {
+				mentions = null;
+			}
 		}
 
 		return result;

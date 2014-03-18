@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import cc.pp.service.tencent.dao.info.TencentUserInfoDao;
 import cc.pp.service.tencent.dao.info.TencentWeiboInfoDao;
+import cc.pp.service.tencent.exception.TencentApiException;
 import cc.pp.service.tencent.model.FansInfo;
 import cc.pp.service.tencent.model.OtherInfoData;
 import cc.pp.service.tencent.model.UserFansListData;
@@ -44,12 +45,12 @@ public class T2FansAnalysis {
 	/**
 	 * 测试函数
 	 */
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 
 		TencentTokenService tokenService = new TencentTokenServiceImpl();
 		T2FansAnalysis fansAnalysis = new T2FansAnalysis(TencentDaoUtils.getTencentUserInfoDao(tokenService),
 				TencentDaoUtils.getTencentWeiboInfoDao(tokenService));
-		fansAnalysis.insertUserFansResult("all");
+		fansAnalysis.insertUserFansResult("new");
 	}
 
 	/**
@@ -82,7 +83,12 @@ public class T2FansAnalysis {
 
 		FansAnalysisResult result = new FansAnalysisResult();
 		/*****用户信息******/
-		OtherInfoData userInfo = tencentUserInfoDao.getTencentUserBaseInfo(uid);
+		OtherInfoData userInfo = null;
+		try {
+			userInfo = tencentUserInfoDao.getTencentUserBaseInfo(uid);
+		} catch (TencentApiException e) {
+			userInfo = null;
+		}
 		if (userInfo == null) {
 			logger.error("User '" + uid + "' does not existed.");
 			return null;
@@ -111,12 +117,12 @@ public class T2FansAnalysis {
 		int city, cursor = 1; // isvip是否为名人用户,cursor页码
 		String citys;
 		UserFansListData fansLists;
-
 		while (cursor * 30 < maxcount) {
-
-			logger.info("Cursor=" + cursor);
-
-			fansLists = tencentUserInfoDao.getTencentUserFans(uid, cursor++);
+			try {
+				fansLists = tencentUserInfoDao.getTencentUserFans(uid, cursor++);
+			} catch (TencentApiException e) {
+				fansLists = null;
+			}
 			if (fansLists == null) {
 				break;
 			}

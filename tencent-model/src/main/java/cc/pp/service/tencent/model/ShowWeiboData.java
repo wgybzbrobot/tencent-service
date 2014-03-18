@@ -3,7 +3,7 @@ package cc.pp.service.tencent.model;
 import java.util.HashMap;
 import java.util.List;
 
-public class ShowData {
+public class ShowWeiboData {
 
 	private String city_code;
 	private int count;

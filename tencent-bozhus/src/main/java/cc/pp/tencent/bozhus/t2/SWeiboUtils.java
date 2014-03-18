@@ -7,7 +7,7 @@ import java.util.Random;
 
 import org.codehaus.jackson.JsonNode;
 
-import cc.pp.service.tencent.model.ShowWeibo;
+import cc.pp.service.tencent.model.ShowWeiboData;
 import cc.pp.tencent.algorithms.top.sort.InsertSort;
 import cc.pp.tencent.algorithms.top.sort.PPSort;
 import cc.pp.tencent.bozhus.common.JsonUtil;
@@ -177,11 +177,11 @@ public class SWeiboUtils {
 	/**
 	 * 原创用户信息整理
 	 */
-	public static void originalUserArrange(SimpleWeiboResult result, ShowWeibo weibo) {
-		result.getOriginaluserinfos().put("username", weibo.getData().getName());
-		result.getOriginaluserinfos().put("nickname", weibo.getData().getNick());
-		result.getOriginaluserinfos().put("head", weibo.getData().getHead());
-		result.getOriginaluserinfos().put("weibotime", weibo.getData().getTimestamp() + "");
+	public static void originalUserArrange(SimpleWeiboResult result, ShowWeiboData weibo) {
+		result.getOriginaluserinfos().put("username", weibo.getName());
+		result.getOriginaluserinfos().put("nickname", weibo.getNick());
+		result.getOriginaluserinfos().put("head", weibo.getHead());
+		result.getOriginaluserinfos().put("weibotime", weibo.getTimestamp() + "");
 	}
 
 	/**
@@ -401,6 +401,9 @@ public class SWeiboUtils {
 		// 如：消息曝光量为 104883，超过 70% 的微博；
 		// 传递了不俗的正能量，参与用户多带正面情绪；男性对该微博兴趣明显比女性高；
 		// 广东、安徽、云南等地区的用户的相对参与度高；皮皮精灵没有发现有水军痕迹哦！
+		if (allexposion == 0) {
+			allexposion = (result.getCommentcount() + result.getRepostcount()) * (100 + RANDOM.nextInt(50));
+		}
 		String lastcom = "消息曝光量为" + allexposion + "，";
 		int swb = (int) (Math.round(Math.random() * 40) + 50);
 		lastcom += "超过" + swb + "% 的微博；";

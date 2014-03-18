@@ -8,8 +8,9 @@ import org.slf4j.LoggerFactory;
 
 import cc.pp.service.tencent.dao.info.TencentUserInfoDao;
 import cc.pp.service.tencent.dao.info.TencentWeiboInfoDao;
+import cc.pp.service.tencent.exception.TencentApiException;
 import cc.pp.service.tencent.model.InfosData;
-import cc.pp.service.tencent.model.ShowWeibo;
+import cc.pp.service.tencent.model.ShowWeiboData;
 import cc.pp.service.tencent.model.SimpleUser;
 import cc.pp.service.tencent.model.UserTimelineData;
 import cc.pp.service.tencent.model.UserTimelineInfo;
@@ -17,6 +18,7 @@ import cc.pp.service.token.TencentTokenServiceImpl;
 import cc.pp.service.token.tencent.TencentTokenService;
 import cc.pp.sina.dao.common.MybatisConfig;
 import cc.pp.sina.dao.t2.T2SingleWeibo;
+import cc.pp.sina.domain.error.ErrorResponse;
 import cc.pp.sina.utils.json.JsonUtils;
 import cc.pp.tencent.algorithms.top.sort.InsertSort;
 import cc.pp.tencent.bozhus.common.SourceType;
@@ -40,7 +42,7 @@ public class T2SingleWeiboAnalysis {
 	/**
 	 * 主函数
 	 */
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 
 		TencentTokenService tokenService = new TencentTokenServiceImpl();
 		T2SingleWeiboAnalysis singleWeiboAnalysis = new T2SingleWeiboAnalysis(
@@ -63,14 +65,14 @@ public class T2SingleWeiboAnalysis {
 							JsonUtils.toJsonWithoutPretty(result));
 				} catch (Exception e) {
 					logger.error("wid=" + wid + " has incorrect string value.");
-					//					singleWeibo.updateSingleWeibo("tencent", Long.parseLong(wid), "", JsonUtils
-					//							.toJsonWithoutPretty(new ErrorResponse.Builder(20003, "wid has error reposters.").build()));
-					singleWeibo.updateSingleWeibo("tencent", Long.parseLong(wid), "", "");
+					singleWeibo.updateSingleWeibo("tencent", Long.parseLong(wid), "", JsonUtils
+							.toJsonWithoutPretty(new ErrorResponse.Builder(20003, "wid has error reposters.").build()));
+					//					singleWeibo.updateSingleWeibo("tencent", Long.parseLong(wid), "", "");
 				}
 			} else {
-				//				singleWeibo.updateSingleWeibo("tencent", Long.parseLong(wid), "", JsonUtils
-				//						.toJsonWithoutPretty(new ErrorResponse.Builder(20003, "wid has none reposters.").build()));
-				singleWeibo.updateSingleWeibo("tencent", Long.parseLong(wid), "", "");
+				singleWeibo.updateSingleWeibo("tencent", Long.parseLong(wid), "", JsonUtils
+						.toJsonWithoutPretty(new ErrorResponse.Builder(20003, "wid has none reposters.").build()));
+				//				singleWeibo.updateSingleWeibo("tencent", Long.parseLong(wid), "", "");
 			}
 		}
 	}
@@ -109,8 +111,13 @@ public class T2SingleWeiboAnalysis {
 		// 获取该微博数据
 		String wid = SWeiboUtils.getWid(url);
 		/*********单条微博信息*********/
-		ShowWeibo weibo = tencentWeiboInfoDao.getSingleWeiboDetail(wid);
-		if (weibo.getData() == null) {
+		ShowWeiboData weibo = null;
+		try {
+			weibo = tencentWeiboInfoDao.getSingleWeiboDetail(wid);
+		} catch (TencentApiException e) {
+			weibo = null;
+		}
+		if (weibo == null) {
 			logger.info("Wid=" + wid + " does not existed.");
 			return null;
 		}
@@ -118,14 +125,19 @@ public class T2SingleWeiboAnalysis {
 		// 1、原创用户信息
 		SWeiboUtils.originalUserArrange(result, weibo);
 		// 2、微博内容
-		result.setWbcontent(weibo.getData().getText());
+		result.setWbcontent(weibo.getText());
 		// 4、总转发量
-		result.setRepostcount(weibo.getData().getCount());
+		result.setRepostcount(weibo.getCount());
 		// 5、总评论量
-		result.setCommentcount(weibo.getData().getMcount());
+		result.setCommentcount(weibo.getMcount());
 
 		/*********转发数据*********/
-		UserTimelineData reposters = tencentWeiboInfoDao.getTencentSingleWeiboResposts(wid);
+		UserTimelineData reposters = null;
+		try {
+			reposters = tencentWeiboInfoDao.getTencentSingleWeiboResposts(wid);
+		} catch (TencentApiException e) {
+			reposters = null;
+		}
 		if (reposters == null) {
 			logger.info("Wid=" + wid + " has no reposters.");
 			return null;
@@ -134,7 +146,7 @@ public class T2SingleWeiboAnalysis {
 		long lasttime;
 		String lastwid;
 		int cursor = 2;
-		while ((cursor * 100 < weibo.getData().getCount()) && (cursor <= 50)) {
+		while ((cursor * 100 < weibo.getCount()) && (cursor <= 50)) {
 
 			logger.info("Cursor=" + cursor++);
 
@@ -175,7 +187,11 @@ public class T2SingleWeiboAnalysis {
 			}
 			lasttime = reposters.getInfo().get(reposters.getInfo().size() - 1).getTimestamp();
 			lastwid = reposters.getInfo().get(reposters.getInfo().size() - 1).getId();
-			reposters = tencentWeiboInfoDao.getTencentSingleWeiboResposts(wid, lasttime, lastwid);
+			try {
+				reposters = tencentWeiboInfoDao.getTencentSingleWeiboResposts(wid, lasttime, lastwid);
+			} catch (TencentApiException e) {
+				reposters = null;
+			}
 			if (reposters == null) {
 				break;
 			}
@@ -234,7 +250,12 @@ public class T2SingleWeiboAnalysis {
 
 			uids = getUids(usernames, i);
 			/*****************采集用户信息******************/
-			InfosData userinfos = tencentUserInfoDao.getTencentUserBaseInfos(uids);
+			InfosData userinfos = null;
+			try {
+				userinfos = tencentUserInfoDao.getTencentUserBaseInfos(uids);
+			} catch (TencentApiException e) {
+				userinfos = null;
+			}
 			if (userinfos == null) {
 				i++;
 				continue;
@@ -289,14 +310,22 @@ public class T2SingleWeiboAnalysis {
 				uids += usernames.get(i * 30 + j) + ",";
 			}
 			uids = uids.substring(0, uids.length() - 1);
-			userinfos = tencentUserInfoDao.getTencentUserBaseInfos(uids);
+			try {
+				userinfos = tencentUserInfoDao.getTencentUserBaseInfos(uids);
+			} catch (TencentApiException e) {
+				userinfos = null;
+			}
 			if (userinfos == null) {
 				continue;
 			}
 			for (SimpleUser userinfo : userinfos.getInfo()) {
 				usersum++;
 				// 10、性别分布
-				gender[userinfo.getSex()]++; //1-男，2-女，0-未填写
+				if (userinfo.getSex() > 2) {
+					gender[0]++; // 错误信息，认为是未填写
+				} else {
+					gender[userinfo.getSex()]++; //1-男，2-女，0-未填写
+				}
 				// 13、转发用户质量（水军比例）
 				reposterquality[SWeiboUtils.checkfans(userinfo.getFansnum())]++;
 				exposionsum += userinfo.getFansnum();

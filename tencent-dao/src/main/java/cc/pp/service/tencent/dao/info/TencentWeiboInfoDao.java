@@ -1,6 +1,6 @@
 package cc.pp.service.tencent.dao.info;
 
-import cc.pp.service.tencent.model.ShowWeibo;
+import cc.pp.service.tencent.model.ShowWeiboData;
 import cc.pp.service.tencent.model.UserTimelineData;
 
 
@@ -14,7 +14,7 @@ public interface TencentWeiboInfoDao {
 	/**
 	 * 获取单条微博详细数据
 	 */
-	public ShowWeibo getSingleWeiboDetail(String wid);
+	public ShowWeiboData getSingleWeiboDetail(String wid);
 
 	/**
 	 * 单条微博转发列表

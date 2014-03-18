@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cc.pp.service.tencent.dao.info.TencentWeiboInfoDao;
+import cc.pp.service.tencent.exception.TencentApiException;
 import cc.pp.service.tencent.model.UserTimelineData;
 import cc.pp.service.tencent.model.UserTimelineInfo;
 
@@ -36,7 +37,12 @@ public class SWeiboAnalysis {
 				if (uids[i] == null || uids[i].length() < 5) {
 					break;
 				}
-				UserTimelineData weibos = tencentWeiboInfoDao.getTencentUserOriRepWeibos(uids[i], 0, "0");
+				UserTimelineData weibos = null;
+				try {
+					weibos = tencentWeiboInfoDao.getTencentUserOriRepWeibos(uids[i], 0, "0");
+				} catch (TencentApiException e) {
+					weibos = null;
+				}
 				if (weibos == null) {
 					continue;
 				}

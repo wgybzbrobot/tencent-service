@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import cc.pp.service.tencent.dao.info.TencentUserInfoDao;
 import cc.pp.service.tencent.dao.info.TencentWeiboInfoDao;
+import cc.pp.service.tencent.exception.TencentApiException;
 import cc.pp.service.tencent.model.OtherInfoData;
 import cc.pp.service.tencent.model.UserTimelineData;
 import cc.pp.service.tencent.model.UserTimelineInfo;
@@ -70,7 +71,12 @@ public class T2InteractionsAnalysis {
 						interactionsInfo.getFanscount(), interactionsInfo.getAllcount(),
 						interactionsInfo.getEmotionratio());
 			} else {
-				interactions.insertT2TencentInteractions(uid, Integer.parseInt(TimeUtils.getTodayDaily()), 0, 0, "");
+				HashMap<String, String> emotionratio = new HashMap<>();
+				emotionratio.put("negative", "0.0%");
+				emotionratio.put("positive", "0.0%");
+				emotionratio.put("neutral", "0.0%");
+				interactions.insertT2TencentInteractions(uid, Integer.parseInt(TimeUtils.getTodayDaily()), 0, 0,
+						JsonUtils.toJsonWithoutPretty(emotionratio));
 			}
 		}
 	}
@@ -88,7 +94,12 @@ public class T2InteractionsAnalysis {
 		int[] emotions = new int[3];
 		HashMap<String,String> emotionratio = new HashMap<>();
 		/******采集用户基础信息******/
-		OtherInfoData userInfo = tencentUserInfoDao.getTencentUserBaseInfo(uid);
+		OtherInfoData userInfo = null;
+		try {
+			userInfo = tencentUserInfoDao.getTencentUserBaseInfo(uid);
+		} catch (TencentApiException e) {
+			userInfo = null;
+		}
 		if (userInfo == null) {
 			logger.info("User '" + uid + "' does not existed.");
 			return null;
@@ -101,7 +112,12 @@ public class T2InteractionsAnalysis {
 		emotions[1] += atInfo[1];
 		emotions[2] += atInfo[2];
 		/******采集用户微博信息******/
-		UserTimelineData userWeibos = tencentWeiboInfoDao.getTencentUserWeibos(uid);
+		UserTimelineData userWeibos = null;
+		try {
+			userWeibos = tencentWeiboInfoDao.getTencentUserWeibos(uid);
+		} catch (TencentApiException e) {
+			userWeibos = null;
+		}
 		if (userWeibos == null) {
 			logger.info("User '"+ uid + "' has no weibos.");
 			return null;
@@ -118,12 +134,20 @@ public class T2InteractionsAnalysis {
 				continue;
 			}
 			allcount += count;
-			reposters = tencentWeiboInfoDao.getTencentSingleWeiboResposts(weibo.getId());
+			try {
+				reposters = tencentWeiboInfoDao.getTencentSingleWeiboResposts(weibo.getId());
+			} catch (TencentApiException e) {
+				reposters = null;
+			}
 			if (reposters == null) { //返回错误信息处理
 				continue;
 			}
-			for (UserTimelineInfo reposter : reposters.getInfo()) {
-				emotions[T2Utils.getEmotions(reposter.getText())]++;
+			try {
+				for (UserTimelineInfo reposter : reposters.getInfo()) {
+					emotions[T2Utils.getEmotions(reposter.getText())]++;
+				}
+			} catch (RuntimeException e) {
+				continue;
 			}
 		}
 		int[] remotions = T2Utils.transData(emotions);

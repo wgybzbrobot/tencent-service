@@ -1,6 +1,6 @@
 #!/bin/bash
 
-mainClass=cc.pp.service.tencent.api.TencentApiApplication
+mainClass=cc.pp.tencent.bozhus.driver.TencentBozhusDriver
 
 # resolve links - $0 may be a softlink
 PRG="$0"
@@ -45,7 +45,7 @@ start() {
 case $1 in
   (start)
     shift
-    start
+    start $@
     ;;
   (stop)
     echo "stop"

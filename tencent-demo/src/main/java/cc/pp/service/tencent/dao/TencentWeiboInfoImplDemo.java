@@ -5,7 +5,7 @@ import java.lang.reflect.Proxy;
 import cc.pp.service.tencent.dao.info.TencentWeiboInfoDao;
 import cc.pp.service.tencent.dao.info.TencentWeiboInfoDaoImpl;
 import cc.pp.service.tencent.exception.TencentApiException;
-import cc.pp.service.tencent.model.ShowWeibo;
+import cc.pp.service.tencent.model.ShowWeiboData;
 import cc.pp.service.tencent.model.UserTimelineData;
 import cc.pp.service.token.TencentTokenServiceImpl;
 import cc.pp.service.token.tencent.TencentTokenService;
@@ -46,7 +46,7 @@ public class TencentWeiboInfoImplDemo {
 		System.out.println(JsonUtils.toJson(userTimelines));
 
 		String wid = "373718090218003";
-		ShowWeibo weibo = tencentWeiboInfoDao.getSingleWeiboDetail(wid);
+		ShowWeiboData weibo = tencentWeiboInfoDao.getSingleWeiboDetail(wid);
 		System.out.println(JsonUtils.toJson(weibo));
 		UserTimelineData reposters = tencentWeiboInfoDao.getTencentSingleWeiboResposts(wid);
 		System.out.println(JsonUtils.toJson(reposters));

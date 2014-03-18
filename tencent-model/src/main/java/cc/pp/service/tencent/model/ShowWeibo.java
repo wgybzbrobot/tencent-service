@@ -2,13 +2,13 @@ package cc.pp.service.tencent.model;
 
 public class ShowWeibo extends Result<Object> {
 
-	private ShowData data;
+	private ShowWeiboData data;
 
-	public ShowData getData() {
+	public ShowWeiboData getData() {
 		return data;
 	}
 
-	public void setData(ShowData data) {
+	public void setData(ShowWeiboData data) {
 		this.data = data;
 	}
 

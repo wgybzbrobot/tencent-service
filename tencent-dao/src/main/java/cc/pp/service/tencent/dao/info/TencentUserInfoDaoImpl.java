@@ -14,6 +14,8 @@ import com.tencent.weibo.oauthv1.OAuthV1;
 
 public class TencentUserInfoDaoImpl implements TencentUserInfoDao {
 
+	//	private static Logger logger = LoggerFactory.getLogger(TencentUserInfoDaoImpl.class);
+
 	private final TencentTokenService tokenService;
 
 	public TencentUserInfoDaoImpl(TencentTokenService tokenService) {

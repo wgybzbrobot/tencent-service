@@ -1,6 +1,6 @@
 package cc.pp.service.tencent.dao.info;
 
-import cc.pp.service.tencent.model.ShowWeibo;
+import cc.pp.service.tencent.model.ShowWeiboData;
 import cc.pp.service.tencent.model.UserTimelineData;
 import cc.pp.service.token.tencent.TencentToken;
 import cc.pp.service.token.tencent.TencentTokenService;
@@ -11,6 +11,8 @@ import com.tencent.weibo.constants.OauthInit;
 import com.tencent.weibo.oauthv1.OAuthV1;
 
 public class TencentWeiboInfoDaoImpl implements TencentWeiboInfoDao {
+
+	//	private static Logger logger = LoggerFactory.getLogger(TencentWeiboInfoDaoImpl.class);
 
 	private final TencentTokenService tokenService;
 
@@ -43,7 +45,7 @@ public class TencentWeiboInfoDaoImpl implements TencentWeiboInfoDao {
 	}
 
 	@Override
-	public ShowWeibo getSingleWeiboDetail(String wid) {
+	public ShowWeiboData getSingleWeiboDetail(String wid) {
 		TencentToken token = tokenService.getRandomToken();
 		OAuthV1 oauth = new OAuthV1();
 		OauthInit.oauthInit(oauth, token.getAccessToken(), token.getTokenSecret());

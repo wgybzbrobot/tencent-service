@@ -16,10 +16,9 @@ public class TencentDaoUtils {
 
 		TencentUserInfoDao tencentUserInfoDao = (TencentUserInfoDao) Proxy.newProxyInstance(TencentUserInfoDao.class
 				.getClassLoader(), new Class[] { TencentUserInfoDao.class }, new RetryHandler(
-				new TencentUserInfoDaoImpl(tokenService), 50, 5) {
+				new TencentUserInfoDaoImpl(tokenService), 100, 5) {
 			@Override
 			protected boolean isRetry(Throwable e) {
-				System.out.println(e instanceof TencentApiException);
 				if (e instanceof TencentApiException) {
 					TencentApiException exception = (TencentApiException) e;
 					if ((exception.getRet() == 3 && exception.getErrCode() == 8) // msg=check sign error，应该是token无效，重试
@@ -40,7 +39,7 @@ public class TencentDaoUtils {
 
 		TencentWeiboInfoDao tencentWeiboInfoDao = (TencentWeiboInfoDao) Proxy.newProxyInstance(
 				TencentWeiboInfoDao.class.getClassLoader(), new Class[] { TencentWeiboInfoDao.class },
-				new RetryHandler(new TencentWeiboInfoDaoImpl(tokenService), 50, 5) {
+				new RetryHandler(new TencentWeiboInfoDaoImpl(tokenService), 100, 5) {
 			@Override
 			protected boolean isRetry(Throwable e) {
 				if (e instanceof TencentApiException) {
