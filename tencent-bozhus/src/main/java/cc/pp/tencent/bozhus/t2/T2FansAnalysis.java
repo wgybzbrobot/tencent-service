@@ -95,7 +95,7 @@ public class T2FansAnalysis {
 		}
 
 		// 1、总粉丝数
-		result.setFanssum(userInfo.getFansnum());
+		result.setFansSum(userInfo.getFansnum());
 		int maxcount = Math.min(userInfo.getFansnum(), FANS_LIMIT);
 		/*****粉丝信息*****/
 		int existuids = 0;
@@ -198,9 +198,9 @@ public class T2FansAnalysis {
 		/************12、认证比例******************/
 		result.setAddVRatio(Float.toString((float) Math.round(((float) addvratio[1] / existuids) * 10000) / 100) + "%");
 		/************13、粉丝活跃时间线分析**************/
-		result.setActivetimeline(getSwbAnalysis(top10uids));
+		result.setActiveTimeline(getSwbAnalysis(top10uids));
 		/************14、粉丝增长趋势*****************/
-		result.setFansaddtimeline(getFansCountTimeline(uid, 7));
+		result.setFansAddTimeline(getFansCountTimeline(uid, 7));
 
 		return result;
 	}

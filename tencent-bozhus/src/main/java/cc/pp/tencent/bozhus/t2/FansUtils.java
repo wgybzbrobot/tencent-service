@@ -196,7 +196,7 @@ public class FansUtils {
 	public static void topFansArrange(FansAnalysisResult result, String[] top40fans) {
 		for (int n = 0; n < 40; n++) {
 			if (top40fans[n].length() > 5) {
-				result.getTop40byfans().put(Integer.toString(n), top40fans[n].substring(0, top40fans[n].indexOf("=")));
+				result.getTopNByFans().put(Integer.toString(n), top40fans[n].substring(0, top40fans[n].indexOf("=")));
 				top40fans[n] = top40fans[n].substring(0, top40fans[n].indexOf("="));
 			} else {
 				top40fans[n] = null;
@@ -218,15 +218,15 @@ public class FansUtils {
 	 * 粉丝等级结果整理
 	 */
 	public static void fansGradeArrange(FansAnalysisResult result, int[] gradebyfans, int existuids) {
-		result.getGradebyfans().put("<100",
+		result.getGradeByFans().put("<100",
 				Float.toString((float) Math.round(((float) gradebyfans[0] / existuids) * 10000) / 100) + "%");
-		result.getGradebyfans().put("100~1000",
+		result.getGradeByFans().put("100~1000",
 				Float.toString((float) Math.round(((float) gradebyfans[1] / existuids) * 10000) / 100) + "%");
-		result.getGradebyfans().put("1000~1w",
+		result.getGradeByFans().put("1000~1w",
 				Float.toString((float) Math.round(((float) gradebyfans[2] / existuids) * 10000) / 100) + "%");
-		result.getGradebyfans().put("1w~10w",
+		result.getGradeByFans().put("1w~10w",
 				Float.toString((float) Math.round(((float) gradebyfans[3] / existuids) * 10000) / 100) + "%");
-		result.getGradebyfans().put(">10w",
+		result.getGradeByFans().put(">10w",
 				Float.toString((float) Math.round(((float) gradebyfans[4] / existuids) * 10000) / 100) + "%");
 	}
 
@@ -234,9 +234,9 @@ public class FansUtils {
 	 * 认证分布结果整理
 	 */
 	public static void verifiedTypeArrange(FansAnalysisResult result, int[] verifiedtype, int existuids) {
-		result.getVerifiedtype().put("no",
+		result.getVerifiedType().put("no",
 				Float.toString((float) Math.round(((float) verifiedtype[0] / existuids) * 10000) / 100) + "%");
-		result.getVerifiedtype().put("vip",
+		result.getVerifiedType().put("vip",
 				Float.toString((float) Math.round(((float) verifiedtype[1] / existuids) * 10000) / 100) + "%");
 	}
 
@@ -251,7 +251,7 @@ public class FansUtils {
 			r = (float) existuids / userfanssum;
 		}
 		int activefanssum = Math.round(((float) quality[1] / existuids) * userfanssum * r);
-		result.setActivefanssum(activefanssum);
+		result.setActiveFansSum(activefanssum);
 	}
 
 	/**
@@ -267,7 +267,7 @@ public class FansUtils {
 			HashMap<String, String> temp = new HashMap<String, String>();
 			temp.put("tag", tag);
 			temp.put("weight", weight);
-			result.getHottags().put(Integer.toString(i), temp);
+			result.getHotTags().put(Integer.toString(i), temp);
 		}
 	}
 }
